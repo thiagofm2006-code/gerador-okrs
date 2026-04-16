@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 
 interface ResultSectionProps {
-  result: string ;
+  result: string;
 }
 
 function parseOKR(text: string) {
