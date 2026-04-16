@@ -39,15 +39,16 @@ KR 0x - (resultado-chave)
 KPI 0x - (indicador de sucesso)
 (descrição)
 
-(espaço)
+(pular uma linha para proxima resposta)
 
-Pontos de Atenção 0x - (risco ou alerta)
+Pontos de Atenção 0x - (risco ou alerta em italico o titulo)
 (descrição)
 
-(espaço)
+(pular uma linha para proxima resposta)
 
-Plano de Ação
+Plano de Ação (em itálico, apenas o título)
 (descrição)
+(pular uma linha para proxima resposta)
 `;
 
     const response = await fetch("https://api.openai.com/v1/responses", {
