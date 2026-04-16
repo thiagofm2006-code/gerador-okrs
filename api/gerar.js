@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const prompt = `
 Você é um líder de growth sênior especialista em OKRs.
 
-Com base nas informações abaixo, gere uma OKR completa, prática e utilizável no mundo real.
+Crie uma OKR completa baseada nos dados abaixo:
 
 Meta: ${meta}
 Período: ${periodo} meses
@@ -21,35 +21,9 @@ Dado atual: ${atual}
 Meta desejada: ${metaFinal}
 
 Regras:
-- Gere um título estratégico para a OKR
-- Gere múltiplos KR (sem limite)
-- Gere múltiplos KPI (sem limite)
-- Gere múltiplos Pontos de Atenção (sem limite)
-- Seja direto e profissional
-- NÃO faça perguntas
-- NÃO converse com o usuário
-
-Formato obrigatório:
-
-OKR - (título)
-
-KR 01 - (título)
-(descrição)
-
-KR 02 - (título)
-(descrição)
-
-KPI 01 - (título)
-(descrição)
-
-KPI 02 - (título)
-(descrição)
-
-Pontos de Atenção 01 - (título)
-(descrição)
-
-Pontos de Atenção 02 - (título)
-(descrição)
+- Seja direto e prático
+- Gere Objetivo, KRs, KPIs e Riscos
+- Nada de perguntas ou conversa
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -70,23 +44,25 @@ Pontos de Atenção 02 - (título)
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Erro OpenAI: ${errorText}`);
-    }
-
     const data = await response.json();
+
+    if (!response.ok) {
+      console.error('OpenAI error:', data);
+      return res.status(500).json({
+        error: data.error?.message || 'Erro na OpenAI',
+      });
+    }
 
     const result = data?.choices?.[0]?.message?.content;
 
     if (!result) {
-      throw new Error('Resposta inválida da OpenAI');
+      throw new Error('Resposta vazia da OpenAI');
     }
 
     return res.status(200).json({ result });
 
   } catch (error) {
-    console.error('ERRO /gerar:', error);
+    console.error('ERRO API /gerar:', error);
 
     return res.status(500).json({
       error: error.message || 'Erro interno no servidor',
