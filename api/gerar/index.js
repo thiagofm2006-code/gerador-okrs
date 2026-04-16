@@ -41,12 +41,15 @@ KPI 0x - (indicador de sucesso)
 
 (pular uma linha para proxima resposta)
 
+
+Pontos de Atenção (titulo em negrito)
 Pontos de Atenção 0x - (risco ou alerta em italico o titulo)
 (descrição)
 
 (pular uma linha para proxima resposta)
 
-Plano de Ação (em itálico, apenas o título)
+Plano de Ação (titulo em negrito)
+Plano de Ação 0x (em itálico, apenas o título)
 (descrição)
 (pular uma linha para proxima resposta)
 `;
