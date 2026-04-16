@@ -1,4 +1,4 @@
-import Header from './OKRForm';
+import Header from './ResultSection';
 
 export default function App() {
   return (
