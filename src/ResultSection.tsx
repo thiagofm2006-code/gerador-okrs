@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Copy } from 'lucide-react';
 
 interface ResultSectionProps {
   result: string;
@@ -106,122 +105,67 @@ export default function ResultSection({ result }: ResultSectionProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleExportPDF = () => {
-    const element = document.getElementById('pdf-content');
-    const html2pdf = (window as any).html2pdf;
-
-    html2pdf()
-      .set({
-        margin: 10,
-        filename: 'okr.pdf',
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4' },
-      })
-      .from(element)
-      .save();
-  };
-
   return (
-    <>
+    <div className="space-y-6">
+
       {/* HEADER */}
-      <section className="mb-6 flex justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="text-xs font-semibold text-gray-400 uppercase">
           Resultado
         </h2>
 
-        <div className="flex gap-2">
-          <button onClick={handleCopy} className="text-xs px-3 py-1.5 border rounded">
-            {copied ? 'Copiado!' : 'Copiar'}
-          </button>
-
-          <button
-            onClick={handleExportPDF}
-            className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded"
-          >
-            PDF
-          </button>
-        </div>
-      </section>
-
-      {/* UI */}
-      <div className="space-y-6">
-
-        {/* OKR */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm">
-          <p className="font-semibold">{parsed.okr}</p>
-        </div>
-
-        {/* KR + KPI */}
-        <div className="bg-blue-50 border rounded-2xl p-6">
-          <h3 className="font-semibold mb-4 text-blue-700">
-            Resultados-chave e KPIs
-          </h3>
-
-          {parsed.krs.map((item, i) => (
-            <div key={i} className="mb-4 bg-white p-5 rounded-xl border shadow-sm">
-              <p className="font-semibold">{item.krTitle}</p>
-              <p className="text-sm text-gray-600">{item.krDesc}</p>
-
-              <p className="font-semibold mt-3">{item.kpiTitle}</p>
-              <p className="text-sm text-gray-600">{item.kpiDesc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Pontos */}
-        <div className="bg-yellow-50 border rounded-2xl p-6">
-          <h3 className="font-semibold text-yellow-700 mb-2">
-            Pontos de Atenção
-          </h3>
-
-          {parsed.pontos.map((p, i) => (
-            <p key={i} className="text-sm">{p}</p>
-          ))}
-        </div>
-
-        {/* Plano */}
-        <div className="bg-green-50 border rounded-2xl p-6">
-          <h3 className="font-semibold text-green-700 mb-2">
-            Plano de Ação
-          </h3>
-
-          {parsed.plano.map((p, i) => (
-            <p key={i} className="text-sm">{p}</p>
-          ))}
-        </div>
+        <button
+          onClick={handleCopy}
+          className="text-xs px-3 py-1.5 border rounded hover:bg-gray-50"
+        >
+          {copied ? 'Copiado!' : 'Copiar'}
+        </button>
       </div>
 
-      {/* PDF */}
-      <div id="pdf-content" className="bg-white p-8 text-black mt-10">
+      {/* OKR */}
+      <div className="bg-white border rounded-2xl p-6 shadow-sm">
+        <p className="font-semibold">{parsed.okr}</p>
+      </div>
 
-        <h1 style={{ fontSize: '20px' }}>OKR</h1>
-        <p>{parsed.okr}</p>
-
-        <h2 style={{ marginTop: '20px' }}>Resultados-chave</h2>
+      {/* KR + KPI */}
+      <div className="bg-blue-50 border rounded-2xl p-6">
+        <h3 className="font-semibold mb-4 text-blue-700">
+          Resultados-chave e KPIs
+        </h3>
 
         {parsed.krs.map((item, i) => (
-          <div key={i} style={{ marginBottom: '12px' }}>
-            <p><strong>{item.krTitle}</strong></p>
-            <p>{item.krDesc}</p>
+          <div key={i} className="mb-4 bg-white p-5 rounded-xl border shadow-sm">
+            <p className="font-semibold">{item.krTitle}</p>
+            <p className="text-sm text-gray-600">{item.krDesc}</p>
 
-            <p style={{ marginTop: '6px' }}>
-              <strong>{item.kpiTitle}</strong>
-            </p>
-            <p>{item.kpiDesc}</p>
+            <p className="font-semibold mt-3">{item.kpiTitle}</p>
+            <p className="text-sm text-gray-600">{item.kpiDesc}</p>
           </div>
         ))}
-
-        <h2>Pontos de Atenção</h2>
-        {parsed.pontos.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-
-        <h2>Plano de Ação</h2>
-        {parsed.plano.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-
       </div>
-    </>
+
+      {/* PONTOS */}
+      <div className="bg-yellow-50 border rounded-2xl p-6">
+        <h3 className="font-semibold text-yellow-700 mb-2">
+          Pontos de Atenção
+        </h3>
+
+        {pontos.map((p, i) => (
+          <p key={i} className="text-sm">{p}</p>
+        ))}
+      </div>
+
+      {/* PLANO */}
+      <div className="bg-green-50 border rounded-2xl p-6">
+        <h3 className="font-semibold text-green-700 mb-2">
+          Plano de Ação
+        </h3>
+
+        {plano.map((p, i) => (
+          <p key={i} className="text-sm">{p}</p>
+        ))}
+      </div>
+
+    </div>
   );
 }
