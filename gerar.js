@@ -1,12 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   try {
     const { meta, periodo, atual, metaFinal } = req.body;
+
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY não configurada na Vercel');
+    }
 
     const prompt = `
 Você é um líder de growth sênior especialista em OKRs.
@@ -23,7 +25,7 @@ Regras:
 - Gere múltiplos KR (sem limite)
 - Gere múltiplos KPI (sem limite)
 - Gere múltiplos Pontos de Atenção (sem limite)
-- Seja direto, claro e profissional
+- Seja direto e profissional
 - NÃO faça perguntas
 - NÃO converse com o usuário
 
@@ -68,13 +70,26 @@ Pontos de Atenção 02 - (título)
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erro OpenAI: ${errorText}`);
+    }
+
     const data = await response.json();
 
-    const result =
-      data.choices?.[0]?.message?.content || 'Erro ao gerar resposta';
+    const result = data?.choices?.[0]?.message?.content;
+
+    if (!result) {
+      throw new Error('Resposta inválida da OpenAI');
+    }
 
     return res.status(200).json({ result });
+
   } catch (error) {
-    return res.status(500).json({ error: 'Erro interno no servidor' });
+    console.error('ERRO /gerar:', error);
+
+    return res.status(500).json({
+      error: error.message || 'Erro interno no servidor',
+    });
   }
 }
