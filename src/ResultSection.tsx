@@ -86,6 +86,11 @@ export default function ResultSection({ result }: ResultSectionProps) {
 
     const html2pdf = (window as any).html2pdf;
 
+    if (!html2pdf) {
+      alert('Erro ao carregar PDF. Tente novamente.');
+      return;
+    }
+
     html2pdf()
       .set({
         margin: 0.5,
@@ -99,7 +104,6 @@ export default function ResultSection({ result }: ResultSectionProps) {
 
   return (
     <>
-      {/* UI NORMAL */}
       <section className="mb-8 space-y-6">
         <div className="flex justify-between">
           <h2 className="text-xs text-gray-400 uppercase">Resultado</h2>
@@ -126,16 +130,14 @@ export default function ResultSection({ result }: ResultSectionProps) {
         </div>
       </section>
 
-      {/* PDF LIMPO */}
+      {/* PDF */}
       <div id="pdf-content" className="p-8 bg-white text-black">
 
-        {/* OKR */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2">OKR</h1>
           <p className="text-lg">{parsed.okr}</p>
         </div>
 
-        {/* KRs */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Resultados-Chave</h2>
 
@@ -149,7 +151,6 @@ export default function ResultSection({ result }: ResultSectionProps) {
           </div>
         </div>
 
-        {/* Pontos */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4 text-yellow-700">
             Pontos de Atenção
@@ -164,7 +165,6 @@ export default function ResultSection({ result }: ResultSectionProps) {
           </div>
         </div>
 
-        {/* Plano */}
         <div>
           <h2 className="text-xl font-semibold mb-4 text-green-700">
             Plano de Ação
