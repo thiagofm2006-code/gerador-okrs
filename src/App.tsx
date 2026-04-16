@@ -1,4 +1,4 @@
-import Header from './ResultSection';
+import Header from './Accordion';
 
 export default function App() {
   return (
