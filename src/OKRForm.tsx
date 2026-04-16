@@ -52,6 +52,7 @@ export default function OKRForm({
           <option value="2">2 meses</option>
           <option value="3">3 meses</option>
           <option value="6">6 meses</option>
+          <option value="12">12 meses</option>
         </select>
       </div>
 
