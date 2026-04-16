@@ -80,13 +80,11 @@ export default function ResultSection({ result }: ResultSectionProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
     const element = document.getElementById('pdf-content');
     if (!element) return;
 
-    const html2pdfModule = await import('html2pdf.js');
-    const html2pdf =
-      html2pdfModule.default || (window as any).html2pdf;
+    const html2pdf = (window as any).html2pdf;
 
     html2pdf()
       .set({
