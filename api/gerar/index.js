@@ -13,71 +13,79 @@ export default async function handler(req, res) {
     }
 
     const prompt = `
-Você é um líder de Growth Sênior com forte experiência em produto e OKRs.
+Você é um líder de Growth Sênior especialista em produto e OKRs.
 
-INPUTS:
+Sua missão é gerar uma OKR altamente prática, estratégica e aplicável no mundo real.
+
+DADOS DE ENTRADA:
 Meta: ${meta}
-Duração do OKR: ${periodo} meses (use sempre "meses")
-Dado atual: ${atual}
+Duração: ${periodo} meses
+Situação atual: ${atual}
 Meta desejada: ${metaFinal}
 
-INSTRUÇÕES:
-- Gere uma OKR completa
-- Gere QUANTOS KRs forem necessários (mínimo 3)
-- Para cada KR, gere um KPI correspondente
-- Gere quantos Pontos de Atenção forem necessários
-- Gere um Plano de Ação completo
-- Seja direto, prático e utilizável no mundo real
+REGRAS:
+- Sempre use "meses" como unidade de tempo
+- Nunca use "períodos", "ciclos" ou variações
+- Gere no mínimo 3 KRs (pode gerar mais se fizer sentido)
+- Cada KR deve ter um KPI correspondente
+- Seja específico, evite genérico
+- Foque em impacto real de produto/growth
 - Não faça perguntas
-- Não explique nada
-- Nunca use "períodos"
-- Separe cada bloco com uma linha em branco
+- Não explique nada fora do formato
 
-FORMATO:
+FORMATAÇÃO (OBRIGATÓRIA):
+- Sempre separar blocos com linha em branco
+- Nunca juntar KR com KPI na mesma linha
+- Nunca colar seções
 
-OKR - título
+FORMATO DE SAÍDA:
 
-KR 01 - título
-descrição
+OKR - [título claro e estratégico]
 
-KPI 01 - título
-descrição
+KR 01 - [resultado-chave]
+[descrição clara e objetiva]
 
-KR 02 - título
-descrição
+KPI 01 - [indicador]
+[descrição do que será medido]
 
-KPI 02 - título
-descrição
+KR 02 - [resultado-chave]
+[descrição]
 
-KR 03 - título
-descrição
+KPI 02 - [indicador]
+[descrição]
 
-KPI 03 - título
-descrição
+KR 03 - [resultado-chave]
+[descrição]
 
-(continue gerando mais KRs se necessário)
+KPI 03 - [indicador]
+[descrição]
+
+(adicione mais KRs se necessário)
 
 
 Pontos de Atenção
 
-Ponto de Atenção 01 - título
-descrição
+Ponto de Atenção 01 - [risco]
+[descrição]
 
-Ponto de Atenção 02 - título
-descrição
+Ponto de Atenção 02 - [risco]
+[descrição]
 
-(continue se necessário)
+(adicione mais se necessário)
 
 
 Plano de Ação
 
-Plano de Ação 01 - título
-descrição
+Plano de Ação 01 - [ação]
+[descrição]
 
-Plano de Ação 02 - título
-descrição
+Plano de Ação 02 - [ação]
+[descrição]
 
-(continue se necessário)
+Plano de Ação 03 - [ação]
+[descrição]
+
+(adicione mais se necessário)
 `;
 
     const response = await fetch("https://api.openai.com/v1/responses", {
@@ -112,9 +120,15 @@ descrição
       });
     }
 
-    const result =
+    let result =
       data?.output?.[0]?.content?.[0]?.text ||
       "Erro ao gerar resposta";
+
+    // 🔥 NORMALIZAÇÃO PROFISSIONAL (resolve seu problema de espaçamento)
+    result = result
+      .replace(/\r/g, '')           // remove \r
+      .replace(/\n{3,}/g, '\n\n')  // evita excesso de quebra
+      .trim();
 
     return res.status(200).json({ result });
 
