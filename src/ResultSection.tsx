@@ -8,7 +8,13 @@ interface ResultSectionProps {
 function parseSections(text: string) {
   const lines = text.split('\n');
 
-  const krs: { krTitle: string; krDesc: string; kpiTitle: string; kpiDesc: string }[] = [];
+  const krs: {
+    krTitle: string;
+    krDesc: string;
+    kpiTitle: string;
+    kpiDesc: string;
+  }[] = [];
+
   const pontos: string[] = [];
   const plano: string[] = [];
 
@@ -110,7 +116,6 @@ export default function ResultSection({ result }: ResultSectionProps) {
         filename: 'okr.pdf',
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4' },
-        pagebreak: { mode: ['css'] },
       })
       .from(element)
       .save();
@@ -133,46 +138,53 @@ export default function ResultSection({ result }: ResultSectionProps) {
             onClick={handleExportPDF}
             className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded"
           >
-            Exportar PDF
+            PDF
           </button>
         </div>
       </section>
 
       {/* UI */}
-      <div className="space-y-5">
-        <div className="bg-white border rounded-2xl p-6">
+      <div className="space-y-6">
+
+        {/* OKR */}
+        <div className="bg-white border rounded-2xl p-6 shadow-sm">
           <p className="font-semibold">{parsed.okr}</p>
         </div>
 
+        {/* KR + KPI */}
         <div className="bg-blue-50 border rounded-2xl p-6">
           <h3 className="font-semibold mb-4 text-blue-700">
             Resultados-chave e KPIs
           </h3>
 
           {parsed.krs.map((item, i) => (
-            <div key={i} className="mb-4 bg-white p-4 rounded-xl border">
+            <div key={i} className="mb-4 bg-white p-5 rounded-xl border shadow-sm">
               <p className="font-semibold">{item.krTitle}</p>
               <p className="text-sm text-gray-600">{item.krDesc}</p>
 
-              <p className="font-semibold mt-2">{item.kpiTitle}</p>
+              <p className="font-semibold mt-3">{item.kpiTitle}</p>
               <p className="text-sm text-gray-600">{item.kpiDesc}</p>
             </div>
           ))}
         </div>
 
+        {/* Pontos */}
         <div className="bg-yellow-50 border rounded-2xl p-6">
           <h3 className="font-semibold text-yellow-700 mb-2">
             Pontos de Atenção
           </h3>
+
           {parsed.pontos.map((p, i) => (
             <p key={i} className="text-sm">{p}</p>
           ))}
         </div>
 
+        {/* Plano */}
         <div className="bg-green-50 border rounded-2xl p-6">
           <h3 className="font-semibold text-green-700 mb-2">
             Plano de Ação
           </h3>
+
           {parsed.plano.map((p, i) => (
             <p key={i} className="text-sm">{p}</p>
           ))}
@@ -188,7 +200,7 @@ export default function ResultSection({ result }: ResultSectionProps) {
         <h2 style={{ marginTop: '20px' }}>Resultados-chave</h2>
 
         {parsed.krs.map((item, i) => (
-          <div key={i} style={{ marginBottom: '12px', pageBreakInside: 'avoid' }}>
+          <div key={i} style={{ marginBottom: '12px' }}>
             <p><strong>{item.krTitle}</strong></p>
             <p>{item.krDesc}</p>
 
