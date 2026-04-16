@@ -8,13 +8,17 @@ interface ResultSectionProps {
 function parseSections(text: string) {
   const lines = text.split('\n');
 
-  const krs: { kr: string; kpi: string }[] = [];
+  const krs: { krTitle: string; krDesc: string; kpiTitle: string; kpiDesc: string }[] = [];
   const pontos: string[] = [];
   const plano: string[] = [];
 
   let okr = '';
-  let currentKR = '';
-  let currentKPI = '';
+
+  let currentKRTitle = '';
+  let currentKRDesc = '';
+  let currentKPITitle = '';
+  let currentKPIDesc = '';
+
   let section = '';
 
   lines.forEach((line) => {
@@ -27,24 +31,37 @@ function parseSections(text: string) {
     }
 
     if (l.startsWith('KR')) {
-      if (currentKR || currentKPI) {
-        krs.push({ kr: currentKR, kpi: currentKPI });
+      if (currentKRTitle) {
+        krs.push({
+          krTitle: currentKRTitle,
+          krDesc: currentKRDesc,
+          kpiTitle: currentKPITitle,
+          kpiDesc: currentKPIDesc,
+        });
       }
-      currentKR = l;
-      currentKPI = '';
+
+      currentKRTitle = l;
+      currentKRDesc = '';
+      currentKPITitle = '';
+      currentKPIDesc = '';
       section = 'kr';
       return;
     }
 
     if (l.startsWith('KPI')) {
-      currentKPI = l;
+      currentKPITitle = l;
       section = 'kpi';
       return;
     }
 
     if (l.includes('Pontos de Atenção')) {
-      if (currentKR || currentKPI) {
-        krs.push({ kr: currentKR, kpi: currentKPI });
+      if (currentKRTitle) {
+        krs.push({
+          krTitle: currentKRTitle,
+          krDesc: currentKRDesc,
+          kpiTitle: currentKPITitle,
+          kpiDesc: currentKPIDesc,
+        });
       }
       section = 'pontos';
       return;
@@ -55,14 +72,19 @@ function parseSections(text: string) {
       return;
     }
 
-    if (section === 'kr') currentKR += '\n' + l;
-    else if (section === 'kpi') currentKPI += '\n' + l;
+    if (section === 'kr') currentKRDesc += ' ' + l;
+    else if (section === 'kpi') currentKPIDesc += ' ' + l;
     else if (section === 'pontos') pontos.push(l);
     else if (section === 'plano') plano.push(l);
   });
 
-  if (currentKR || currentKPI) {
-    krs.push({ kr: currentKR, kpi: currentKPI });
+  if (currentKRTitle) {
+    krs.push({
+      krTitle: currentKRTitle,
+      krDesc: currentKRDesc,
+      kpiTitle: currentKPITitle,
+      kpiDesc: currentKPIDesc,
+    });
   }
 
   return { okr, krs, pontos, plano };
@@ -88,7 +110,7 @@ export default function ResultSection({ result }: ResultSectionProps) {
         filename: 'okr.pdf',
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+        pagebreak: { mode: ['css'] },
       })
       .from(element)
       .save();
@@ -98,21 +120,18 @@ export default function ResultSection({ result }: ResultSectionProps) {
     <>
       {/* HEADER */}
       <section className="mb-6 flex justify-between items-center">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase">
           Resultado
         </h2>
 
         <div className="flex gap-2">
-          <button
-            onClick={handleCopy}
-            className="text-xs px-3 py-1.5 rounded-lg border hover:bg-gray-50"
-          >
+          <button onClick={handleCopy} className="text-xs px-3 py-1.5 border rounded">
             {copied ? 'Copiado!' : 'Copiar'}
           </button>
 
           <button
             onClick={handleExportPDF}
-            className="text-xs px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded"
           >
             Exportar PDF
           </button>
@@ -121,83 +140,75 @@ export default function ResultSection({ result }: ResultSectionProps) {
 
       {/* UI */}
       <div className="space-y-5">
-
-        {/* OKR */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm">
+        <div className="bg-white border rounded-2xl p-6">
           <p className="font-semibold">{parsed.okr}</p>
         </div>
 
-        {/* KR + KPI AGRUPADOS */}
-        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-blue-700 mb-4">
+        <div className="bg-blue-50 border rounded-2xl p-6">
+          <h3 className="font-semibold mb-4 text-blue-700">
             Resultados-chave e KPIs
           </h3>
 
-          <div className="space-y-4">
-            {parsed.krs.map((item, i) => (
-              <div
-                key={i}
-                className="bg-white border rounded-xl p-4"
-              >
-                <p className="font-semibold whitespace-pre-line">
-                  {item.kr}
-                </p>
+          {parsed.krs.map((item, i) => (
+            <div key={i} className="mb-4 bg-white p-4 rounded-xl border">
+              <p className="font-semibold">{item.krTitle}</p>
+              <p className="text-sm text-gray-600">{item.krDesc}</p>
 
-                <p className="text-sm mt-2 whitespace-pre-line text-gray-600">
-                  {item.kpi}
-                </p>
-              </div>
-            ))}
-          </div>
+              <p className="font-semibold mt-2">{item.kpiTitle}</p>
+              <p className="text-sm text-gray-600">{item.kpiDesc}</p>
+            </div>
+          ))}
         </div>
 
-        {/* Pontos */}
-        <div className="bg-yellow-50 border border-yellow-100 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-yellow-700 mb-3">
+        <div className="bg-yellow-50 border rounded-2xl p-6">
+          <h3 className="font-semibold text-yellow-700 mb-2">
             Pontos de Atenção
           </h3>
-
-          <div className="space-y-2 whitespace-pre-line text-sm">
-            {parsed.pontos.join('\n')}
-          </div>
+          {parsed.pontos.map((p, i) => (
+            <p key={i} className="text-sm">{p}</p>
+          ))}
         </div>
 
-        {/* Plano */}
-        <div className="bg-green-50 border border-green-100 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-green-700 mb-3">
+        <div className="bg-green-50 border rounded-2xl p-6">
+          <h3 className="font-semibold text-green-700 mb-2">
             Plano de Ação
           </h3>
-
-          <div className="space-y-2 whitespace-pre-line text-sm">
-            {parsed.plano.join('\n')}
-          </div>
+          {parsed.plano.map((p, i) => (
+            <p key={i} className="text-sm">{p}</p>
+          ))}
         </div>
       </div>
 
-      {/* PDF (IMPORTANTE: NÃO hidden) */}
+      {/* PDF */}
       <div id="pdf-content" className="bg-white p-8 text-black mt-10">
 
-        <h1 style={{ fontSize: '20px', marginBottom: '10px' }}>
-          OKR
-        </h1>
+        <h1 style={{ fontSize: '20px' }}>OKR</h1>
         <p>{parsed.okr}</p>
 
-        <h2 style={{ marginTop: '20px' }}>
-          Resultados-chave e KPIs
-        </h2>
+        <h2 style={{ marginTop: '20px' }}>Resultados-chave</h2>
 
         {parsed.krs.map((item, i) => (
-          <div key={i} style={{ marginBottom: '10px' }}>
-            <pre>{item.kr}</pre>
-            <pre>{item.kpi}</pre>
+          <div key={i} style={{ marginBottom: '12px', pageBreakInside: 'avoid' }}>
+            <p><strong>{item.krTitle}</strong></p>
+            <p>{item.krDesc}</p>
+
+            <p style={{ marginTop: '6px' }}>
+              <strong>{item.kpiTitle}</strong>
+            </p>
+            <p>{item.kpiDesc}</p>
           </div>
         ))}
 
         <h2>Pontos de Atenção</h2>
-        <pre>{parsed.pontos.join('\n')}</pre>
+        {parsed.pontos.map((p, i) => (
+          <p key={i}>{p}</p>
+        ))}
 
         <h2>Plano de Ação</h2>
-        <pre>{parsed.plano.join('\n')}</pre>
+        {parsed.plano.map((p, i) => (
+          <p key={i}>{p}</p>
+        ))}
+
       </div>
     </>
   );
