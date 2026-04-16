@@ -4,6 +4,7 @@ import Accordion from './Accordion';
 import OKRForm from './OKRForm';
 import ResultSection from './ResultSection';
 import Footer from './Footer';
+import { supabase } from '../supabase';
 
 const initialForm: FormData = {
   goal: '',
