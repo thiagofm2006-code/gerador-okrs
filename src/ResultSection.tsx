@@ -5,7 +5,7 @@ interface ResultSectionProps {
 }
 
 function parseSections(text: string) {
-  const lines = text.split('\n');
+  const lines = (text || '').split('\n');
 
   const krs: {
     krTitle: string;
@@ -30,10 +30,10 @@ function parseSections(text: string) {
     if (!currentKRTitle) return;
 
     krs.push({
-      krTitle: currentKRTitle.trim(),
-      krDesc: currentKRDesc.trim(),
-      kpiTitle: currentKPITitle.trim(),
-      kpiDesc: currentKPIDesc.trim(),
+      krTitle: currentKRTitle,
+      krDesc: currentKRDesc,
+      kpiTitle: currentKPITitle,
+      kpiDesc: currentKPIDesc,
     });
 
     currentKRTitle = '';
@@ -46,41 +46,35 @@ function parseSections(text: string) {
     const l = line.trim();
     if (!l) return;
 
-    // OKR
     if (l.startsWith('OKR')) {
       okr = l;
       return;
     }
 
-    // KR
-    if (l.startsWith('KR ')) {
+    if (l.startsWith('KR')) {
       pushKR();
       section = 'kr';
       currentKRTitle = l;
       return;
     }
 
-    // KPI
     if (l.startsWith('KPI')) {
       section = 'kr';
       currentKPITitle = l;
       return;
     }
 
-    // PLANO
     if (l.includes('Plano de Ação')) {
       pushKR();
       section = 'plano';
       return;
     }
 
-    // PONTOS
     if (l.includes('Pontos de Atenção')) {
       section = 'pontos';
       return;
     }
 
-    // conteúdo KR
     if (section === 'kr') {
       if (!currentKPITitle) {
         currentKRDesc += ' ' + l;
@@ -89,29 +83,33 @@ function parseSections(text: string) {
       }
     }
 
-    // plano
-    else if (section === 'plano') {
+    if (section === 'plano') {
       plano.push(l);
     }
 
-    // pontos
-    else if (section === 'pontos') {
+    if (section === 'pontos') {
       pontos.push(l);
     }
   });
 
-  // garante último KR
   pushKR();
 
-  return { okr, krs, plano, pontos };
+  return {
+    okr,
+    krs,
+    plano: plano || [],
+    pontos: pontos || [],
+  };
 }
 
 export default function ResultSection({ result }: ResultSectionProps) {
   const [copied, setCopied] = useState(false);
-  const parsed = parseSections(result);
+
+  const safeResult = result || '';
+  const parsed = parseSections(safeResult);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(safeResult);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -155,24 +153,24 @@ export default function ResultSection({ result }: ResultSectionProps) {
         ))}
       </div>
 
-      {/* PLANO (AGORA PRIMEIRO) */}
+      {/* PLANO */}
       <div className="bg-green-50 border rounded-2xl p-6">
         <h3 className="font-semibold text-green-700 mb-2">
           Plano de Ação
         </h3>
 
-        {plano.map((p, i) => (
+        {parsed.plano.map((p, i) => (
           <p key={i} className="text-sm">{p}</p>
         ))}
       </div>
 
-      {/* PONTOS (DEPOIS) */}
+      {/* PONTOS */}
       <div className="bg-yellow-50 border rounded-2xl p-6">
         <h3 className="font-semibold text-yellow-700 mb-2">
           Pontos de Atenção
         </h3>
 
-        {pontos.map((p, i) => (
+        {parsed.pontos.map((p, i) => (
           <p key={i} className="text-sm">{p}</p>
         ))}
       </div>
