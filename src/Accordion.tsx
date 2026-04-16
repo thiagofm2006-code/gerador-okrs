@@ -8,7 +8,7 @@ interface AccordionItem {
 
 const items: AccordionItem[] = [
   {
-    title: 'O que é OKR',
+    title: 'O que é OKR?',
     content: (
       <p className="text-gray-600 leading-relaxed">
         OKR (Objectives and Key Results) é um framework de gestão que conecta objetivos estratégicos a resultados mensuráveis. Ele orienta times a focarem no que realmente gera impacto no negócio. É amplamente utilizado para alinhar execução com estratégia.
@@ -16,7 +16,7 @@ const items: AccordionItem[] = [
     ),
   },
   {
-    title: 'O que é KR e KPI',
+    title: 'O que é KR e KPI?',
     content: (
       <p className="text-gray-600 leading-relaxed">
         KR (Key Result) define resultados mensuráveis que indicam o sucesso de um objetivo. KPI é um indicador contínuo que monitora a performance ao longo do tempo. Enquanto o KR mede o atingimento, o KPI apoia a tomada de decisão durante o caminho.
@@ -24,7 +24,7 @@ const items: AccordionItem[] = [
     ),
   },
   {
-    title: 'Por que o Product Owner deve dominar isso',
+    title: 'Por que o Product Owner deve dominar isso?',
     content: (
       <p className="text-gray-600 leading-relaxed">
         Dominar OKRs permite ao Product Owner priorizar iniciativas com base em impacto real. Facilita o alinhamento entre produto, negócio e stakeholders. Além disso, melhora a qualidade das decisões e reduz retrabalho no desenvolvimento.
