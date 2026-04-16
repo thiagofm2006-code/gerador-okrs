@@ -20,6 +20,12 @@ export default function OKRForm({
   onSubmit,
   loading,
 }: Props) {
+  const isFormValid =
+    formData.goal.trim() !== '' &&
+    formData.period.trim() !== '' &&
+    formData.currentData.trim() !== '' &&
+    formData.targetData.trim() !== '';
+
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-md space-y-5">
 
@@ -39,7 +45,7 @@ export default function OKRForm({
         />
       </div>
 
-      {/* PERIODO */}
+      {/* PERÍODO */}
       <div>
         <label className="text-sm text-gray-500">Período</label>
         <select
@@ -52,7 +58,6 @@ export default function OKRForm({
           <option value="2">2 meses</option>
           <option value="3">3 meses</option>
           <option value="6">6 meses</option>
-          <option value="12">12 meses</option>
         </select>
       </div>
 
@@ -62,7 +67,9 @@ export default function OKRForm({
         <input
           type="text"
           value={formData.currentData}
-          onChange={(e) => onChange({ ...formData, currentData: e.target.value })}
+          onChange={(e) =>
+            onChange({ ...formData, currentData: e.target.value })
+          }
           placeholder="Ex: NPS 30"
           className="mt-1 w-full border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
         />
@@ -74,7 +81,9 @@ export default function OKRForm({
         <input
           type="text"
           value={formData.targetData}
-          onChange={(e) => onChange({ ...formData, targetData: e.target.value })}
+          onChange={(e) =>
+            onChange({ ...formData, targetData: e.target.value })
+          }
           placeholder="Ex: NPS 60"
           className="mt-1 w-full border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
         />
@@ -83,8 +92,14 @@ export default function OKRForm({
       {/* BOTÃO */}
       <button
         onClick={onSubmit}
-        disabled={loading}
-        className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-900 text-white font-medium text-sm px-6 py-3 rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+        disabled={!isFormValid || loading}
+        className={`w-full flex items-center justify-center gap-2 font-medium text-sm px-6 py-3 rounded-xl transition-all duration-200 active:scale-[0.98]
+          ${
+            isFormValid && !loading
+              ? 'bg-black hover:bg-gray-900 text-white'
+              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+          }
+        `}
       >
         {loading ? (
           <>
