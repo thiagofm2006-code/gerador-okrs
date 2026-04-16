@@ -14,8 +14,8 @@ function parseSections(text: string) {
     kpiDesc: string;
   }[] = [];
 
-  const pontos: string[] = [];
   const plano: string[] = [];
+  const pontos: string[] = [];
 
   let okr = '';
 
@@ -24,75 +24,86 @@ function parseSections(text: string) {
   let currentKPITitle = '';
   let currentKPIDesc = '';
 
-  let section = '';
+  let section: 'kr' | 'plano' | 'pontos' | '' = '';
+
+  const pushKR = () => {
+    if (!currentKRTitle) return;
+
+    krs.push({
+      krTitle: currentKRTitle.trim(),
+      krDesc: currentKRDesc.trim(),
+      kpiTitle: currentKPITitle.trim(),
+      kpiDesc: currentKPIDesc.trim(),
+    });
+
+    currentKRTitle = '';
+    currentKRDesc = '';
+    currentKPITitle = '';
+    currentKPIDesc = '';
+  };
 
   lines.forEach((line) => {
     const l = line.trim();
     if (!l) return;
 
+    // OKR
     if (l.startsWith('OKR')) {
       okr = l;
       return;
     }
 
-    if (l.startsWith('KR')) {
-      if (currentKRTitle) {
-        krs.push({
-          krTitle: currentKRTitle,
-          krDesc: currentKRDesc,
-          kpiTitle: currentKPITitle,
-          kpiDesc: currentKPIDesc,
-        });
-      }
-
-      currentKRTitle = l;
-      currentKRDesc = '';
-      currentKPITitle = '';
-      currentKPIDesc = '';
+    // KR
+    if (l.startsWith('KR ')) {
+      pushKR();
       section = 'kr';
+      currentKRTitle = l;
       return;
     }
 
+    // KPI
     if (l.startsWith('KPI')) {
+      section = 'kr';
       currentKPITitle = l;
-      section = 'kpi';
       return;
     }
 
-    if (l.includes('Pontos de Atenção')) {
-      if (currentKRTitle) {
-        krs.push({
-          krTitle: currentKRTitle,
-          krDesc: currentKRDesc,
-          kpiTitle: currentKPITitle,
-          kpiDesc: currentKPIDesc,
-        });
-      }
-      section = 'pontos';
-      return;
-    }
-
+    // PLANO
     if (l.includes('Plano de Ação')) {
+      pushKR();
       section = 'plano';
       return;
     }
 
-    if (section === 'kr') currentKRDesc += ' ' + l;
-    else if (section === 'kpi') currentKPIDesc += ' ' + l;
-    else if (section === 'pontos') pontos.push(l);
-    else if (section === 'plano') plano.push(l);
+    // PONTOS
+    if (l.includes('Pontos de Atenção')) {
+      section = 'pontos';
+      return;
+    }
+
+    // conteúdo KR
+    if (section === 'kr') {
+      if (!currentKPITitle) {
+        currentKRDesc += ' ' + l;
+      } else {
+        currentKPIDesc += ' ' + l;
+      }
+    }
+
+    // plano
+    else if (section === 'plano') {
+      plano.push(l);
+    }
+
+    // pontos
+    else if (section === 'pontos') {
+      pontos.push(l);
+    }
   });
 
-  if (currentKRTitle) {
-    krs.push({
-      krTitle: currentKRTitle,
-      krDesc: currentKRDesc,
-      kpiTitle: currentKPITitle,
-      kpiDesc: currentKPIDesc,
-    });
-  }
+  // garante último KR
+  pushKR();
 
-  return { okr, krs, pontos, plano };
+  return { okr, krs, plano, pontos };
 }
 
 export default function ResultSection({ result }: ResultSectionProps) {
@@ -144,24 +155,24 @@ export default function ResultSection({ result }: ResultSectionProps) {
         ))}
       </div>
 
-      {/* PONTOS */}
-      <div className="bg-yellow-50 border rounded-2xl p-6">
-        <h3 className="font-semibold text-yellow-700 mb-2">
-          Pontos de Atenção
-        </h3>
-
-        {pontos.map((p, i) => (
-          <p key={i} className="text-sm">{p}</p>
-        ))}
-      </div>
-
-      {/* PLANO */}
+      {/* PLANO (AGORA PRIMEIRO) */}
       <div className="bg-green-50 border rounded-2xl p-6">
         <h3 className="font-semibold text-green-700 mb-2">
           Plano de Ação
         </h3>
 
         {plano.map((p, i) => (
+          <p key={i} className="text-sm">{p}</p>
+        ))}
+      </div>
+
+      {/* PONTOS (DEPOIS) */}
+      <div className="bg-yellow-50 border rounded-2xl p-6">
+        <h3 className="font-semibold text-yellow-700 mb-2">
+          Pontos de Atenção
+        </h3>
+
+        {pontos.map((p, i) => (
           <p key={i} className="text-sm">{p}</p>
         ))}
       </div>
