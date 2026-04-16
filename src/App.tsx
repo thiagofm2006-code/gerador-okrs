@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Header from './components/Header';
-import Accordion from './components/Accordion';
-import OKRForm, { FormData } from './components/OKRForm';
-import ResultSection from './components/ResultSection';
-import Footer from './components/Footer';
+import Header from './Header';
+import Accordion from './Accordion';
+import OKRForm from './OKRForm';
+import ResultSection from './ResultSection';
+import Footer from './Footer';
 import { supabase } from './lib/supabase';
 
 const initialForm: FormData = {
