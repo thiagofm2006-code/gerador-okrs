@@ -1,100 +1,80 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Método não permitido" });
   }
 
   try {
     const { meta, periodo, atual, metaFinal } = req.body;
 
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY não configurada na Vercel');
-    }
-
     const prompt = `
-Você é um líder de Growth e Product especialista em OKRs.
+Você é um líder de Growth Sênior com forte experiência em produto e OKRs.
 
-Crie uma OKR completa, prática e aplicável no mundo real.
-
-## Contexto
+INPUTS:
 Meta: ${meta}
-Tempo total do OKR: ${periodo} meses
-Situação atual: ${atual}
+Duração do OKR: ${periodo} meses (NUNCA use outra palavra ou unidade além de "meses")
+Dado atual: ${atual}
 Meta desejada: ${metaFinal}
 
-## Regras obrigatórias
-- Use SEMPRE "meses" como unidade de tempo (nunca use "períodos")
-- Seja direto, claro e objetivo
-- Não faça perguntas
-- Não explique o que está fazendo
-- Gere conteúdo pronto para uso
+INSTRUÇÕES:
+- Gere uma OKR completa
+- Inclua KRs, KPIs e Pontos de Atenção
+- Inclua um plano de ação para o usuário atingir o valor desejado após o meses selecioandos
+- Seja direto, prático e utilizável no mundo real
+- NÃO explique nada
+- NÃO faça perguntas
+- Sempre use "meses" como unidade de tempo
+- Nunca use "períodos", "ciclos" ou qualquer outra variação
+- Dentro de cada KR, após a descriçao, ja pode inserir o KPI a ser medido pra validar aquela KR.
+- pode ter quantos KR, KPI e Pontos de Atenção forem necessários
+- No formato de saida eu coloquei apenas um KR e um KPI, KR 0x e KPI 0x, mas pode ter vários, o X é pra indicar o numero daquele topico
+- (espaço) é pra dar uma pulada de linha antes da proxima resposta
 
-## Estrutura obrigatória da resposta
+FORMATO:
 
-OKR - (título estratégico)
+OKR - (título estratégico em negrito)
 
-KR 01 - (resultado-chave)
-(descrição objetiva)
-
-KR 02 - (resultado-chave)
-(descrição objetiva)
-
-KR 03 - (resultado-chave)
-(descrição objetiva)
-
-KPI 01 - (indicador)
+KR 0x - (resultado-chave)
 (descrição)
 
-KPI 02 - (indicador)
+KPI 0x - (indicador de sucesso)
 (descrição)
 
-Pontos de Atenção 01 - (risco ou alerta)
+(espaço)
+
+Pontos de Atenção 0x - (risco ou alerta)
 (descrição)
 
-Pontos de Atenção 02 - (risco ou alerta)
+(espaço)
+
+Plano de Ação
 (descrição)
 `;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.7,
+        model: "gpt-4.1-mini",
+        input: prompt,
       }),
     });
 
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(500).json({
-        error: data.error?.message || 'Erro na OpenAI',
-      });
-    }
+    const text =
+      data?.output?.[0]?.content?.[0]?.text ||
+      "Erro ao gerar resposta";
 
-    const result = data?.choices?.[0]?.message?.content;
-
-    if (!result) {
-      return res.status(500).json({
-        error: 'Resposta vazia da OpenAI',
-      });
-    }
-
-    return res.status(200).json({ result });
+    return res.status(200).json({ result: text });
 
   } catch (error) {
-    console.error('ERRO /gerar:', error);
+    console.error("Erro /gerar:", error);
 
     return res.status(500).json({
-      error: error.message || 'Erro interno no servidor',
+      error: "Erro no servidor",
     });
   }
 }
