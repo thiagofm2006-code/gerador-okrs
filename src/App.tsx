@@ -1,3 +1,9 @@
+import Header from './Header';
+
 export default function App() {
-  return <h1>OKR Generator</h1>;
+  return (
+    <>
+      <Header />
+    </>
+  );
 }
