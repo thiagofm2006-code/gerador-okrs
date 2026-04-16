@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
 
 interface ResultSectionProps {
   result: string;
@@ -81,9 +80,13 @@ export default function ResultSection({ result }: ResultSectionProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     const element = document.getElementById('pdf-content');
     if (!element) return;
+
+    const html2pdfModule = await import('html2pdf.js');
+    const html2pdf =
+      html2pdfModule.default || (window as any).html2pdf;
 
     html2pdf()
       .set({
@@ -104,11 +107,17 @@ export default function ResultSection({ result }: ResultSectionProps) {
           <h2 className="text-xs text-gray-400 uppercase">Resultado</h2>
 
           <div className="flex gap-2">
-            <button onClick={handleCopy} className="text-xs text-gray-500 hover:text-blue-600">
+            <button
+              onClick={handleCopy}
+              className="text-xs text-gray-500 hover:text-blue-600"
+            >
               {copied ? 'Copiado!' : 'Copiar'}
             </button>
 
-            <button onClick={handleExportPDF} className="text-xs text-green-600">
+            <button
+              onClick={handleExportPDF}
+              className="text-xs text-green-600"
+            >
               Exportar PDF
             </button>
           </div>
@@ -119,7 +128,7 @@ export default function ResultSection({ result }: ResultSectionProps) {
         </div>
       </section>
 
-      {/* 🔥 VERSÃO LIMPA DO PDF */}
+      {/* PDF LIMPO */}
       <div id="pdf-content" className="p-8 bg-white text-black">
 
         {/* OKR */}
