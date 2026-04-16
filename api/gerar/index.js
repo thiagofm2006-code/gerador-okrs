@@ -23,12 +23,14 @@ Meta desejada: ${metaFinal}
 
 INSTRUÇÕES:
 - Gere uma OKR completa
-- Inclua KRs, KPIs e Pontos de Atenção
-- Inclua um plano de ação
+- Gere QUANTOS KRs forem necessários (mínimo 3)
+- Para cada KR, gere um KPI correspondente
+- Gere quantos Pontos de Atenção forem necessários
+- Gere um Plano de Ação completo
 - Seja direto, prático e utilizável no mundo real
 - Não faça perguntas
 - Não explique nada
-- Nunca use "períodos" ou outras variações de tempo
+- Nunca use "períodos"
 - Separe cada bloco com uma linha em branco
 
 FORMATO:
@@ -47,14 +49,24 @@ descrição
 KPI 02 - título
 descrição
 
+KR 03 - título
+descrição
+
+KPI 03 - título
+descrição
+
+(continue gerando mais KRs se necessário)
+
 
 Pontos de Atenção
 
-Pontos de Atenção 01 - título
+Ponto de Atenção 01 - título
 descrição
 
-Pontos de Atenção 02 - título
+Ponto de Atenção 02 - título
 descrição
+
+(continue se necessário)
 
 
 Plano de Ação
@@ -64,6 +76,8 @@ descrição
 
 Plano de Ação 02 - título
 descrição
+
+(continue se necessário)
 `;
 
     const response = await fetch("https://api.openai.com/v1/responses", {
