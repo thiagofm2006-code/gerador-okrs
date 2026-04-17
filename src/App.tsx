@@ -24,13 +24,22 @@ export default function App() {
       const response = await fetch('/api/gerar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+
+        // ✅ AQUI está a correção (mapeamento correto)
+        body: JSON.stringify({
+          meta: formData.goal,
+          periodo: formData.period,
+          atual: formData.currentData,
+          metaFinal: formData.targetData,
+        }),
       });
 
       const data = await response.json();
+
       setResult(data.result);
-    } catch {
-      alert('Erro ao gerar');
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao gerar OKR');
     } finally {
       setLoading(false);
     }
